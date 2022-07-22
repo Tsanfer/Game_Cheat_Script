@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CheatTable CheatEngineTableVersion="42">
   <Forms>
-    <CETrainer Class="TTrainerForm" Encoding="Ascii85">t(:fM!!Q)vorKg$3Jfe12E?:2RTTq!F_9zV*QU!QL=%2ME3RERE,Fo}RX7cY.0V{hn=M8u5;sS9],wj2th^.%#p6MDJB{4*0?OgNc{V*{*z%OmwD.}dE]iNb=VUJYEEk=_^3+NFsrTmW@b+Y.fk;g1/T(gLddFe16qwM3W;Pe(v}9u{2wi41SL.obPb8OWtKDv,oeRj;OvG#s/MEaI91To/r;J9]?M,34.E@C*:76K)W3rO0F%pwhKH/Hx:dB(c=ge9,GYf:w7jlv*06_Q1P_:VKZ$Rai6]yvxowH6CHDl5zDJ0pse6D6Hbhv13!*.j@E-GF4J#L[{Pr2F0J(}kR/xQVvX4#.by@LvgZSMxuBx@0[sPq*A,8pOg5tz_ZDrSHWszFMMRVj$,-ALVoauGtI!98D@JQ0]!Q*TqjSdWT[,jZ*(0p%-?ptsa:!d?V)Ue074KdFst.{]E(Jex+Ep]vlnH,k!,h-5$8YyFeG:GtCj8ddrZ;-sE5-Jko[UuaMKF7N}WMPOvZY6e;sQrW7e)EO9:69</CETrainer>
+    <CETrainer Class="TTrainerForm" Encoding="Ascii85">t)41-):Zf/ousLgbY=(ZL16*1bcw2p1@bR@H6vAO*kbuQJgKL#;e]j#)h)2FtFYlAcm)X,JdHX,NUS2=^[}yBNq*8fi06}xMI1^@Igt_}cOe;:qt:w%EAN-vz9DpzD)^2i#bWPq$6wL4O1(S;/tS0}8$p6ADHsgL9N#grJaCBcUQxl?Hthm2O1P?CI;oq)?^wRdw*+])xcp2qy5TY1k??]AeTXJHe}[/3n6On!6?fF3n8+l;?]uh!w)S^Trs4:,*HT1FhRj=r7a27]?M/rXi6n$0U7W}hil$$P%nU31I2aB-4Thi-qcKWJvb]1$wx=W(3rZVq+T]?_=ZO^14Gn$F@gJB#Bo#92[.^.[ZM-#yA;J.]+#PTgrNj:?o{!^mFFWu,x0YhQA?GfDq@2mAf+9Y./eEqq01#@2;x0hYf!=r@T2F*ZU4C([P7@l3tN.l^2PKyDI_:R0;8##SR/5.Q[{cPRh4KYU/A4*,Wmibh@Y+(]$zG=lm+[%P-]l1;![oBTKK2*y9Zw7V4gN*7WWpK-yB4V}*llf2Dtxveczw)7@@1(6;^+Y*Cp:at(rL{0QHquH-V!w]HBGfn!Cn=l7i1@QA3)6RIG)4w]3v2v@7e_TUX@7T]@{3yE!qV2@+8Yc</CETrainer>
   </Forms>
   <CheatEntries>
     <CheatEntry>
       <ID>2</ID>
-      <Description>"Sun man pointer"</Description>
+      <Description>"SunFindPointer"</Description>
       <Options moHideChildren="1"/>
       <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
@@ -112,7 +112,7 @@ popcapgame1.exe+97ED0: E8 3B F1 16 00     - call popcapgame1.exe+207010
     </CheatEntry>
     <CheatEntry>
       <ID>5</ID>
-      <Description>"Coin man pointer"</Description>
+      <Description>"CoinFindPointer"</Description>
       <Options moHideChildren="1"/>
       <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
@@ -219,35 +219,48 @@ popcapgame1.exe+1DC99: 50                       - push eax
       </CheatEntries>
     </CheatEntry>
     <CheatEntry>
-      <ID>8</ID>
-      <Description>"无CD"</Description>
+      <ID>10</ID>
+      <Description>"ReadInformation"</Description>
+      <Options moHideChildren="1"/>
       <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>{ Game   : popcapgame1.exe
   Version: 
-  Date   : 2022-07-11
+  Date   : 2022-07-22
   Author : Admin
+
+  This script does blah blah blah
 }
 
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 
-aobscanmodule(INJECT,popcapgame1.exe,FF 47 24 8B 47 24) // should be unique
+aobscanmodule(INJECT,popcapgame1.exe,2B 45 24 89 44 24 10) // should be unique
 alloc(newmem,1024,INJECT) // 分配 1024 字节个内存，用于代码注入
+alloc(pointer_first_card_base,8,INJECT) // 动态分配内存，用于存放1个人造指针
 
 // 注册全局符号
 registersymbol(INJECT)
+registersymbol(pointer_first_card_base) // 人造指针
+registersymbol(is_remove_cooldown_enable) // 人造指针
 
 // 声明标号
 label(original_code)
 label(return)
 label(restore_reg)
+label(is_remove_cooldown_enable)
 
 // 注入代码段
 newmem:
   pushfd // 保存所有标志位
+  // push eax
+
+  mov [pointer_first_card_base],ebp
+
+  cmp byte ptr [is_remove_cooldown_enable],1
+  jne restore_reg
   // 方法一 将冷却标志位置1（0：冷却未完成，1：冷却完成）
-  mov byte [edi+48],1
+  mov byte [ebp+48],1
   // 方法二 一次补充满 CD 值
   // push eax // eax 压栈保存,为后续操作腾出一个寄存器
   // mov eax,[edi+28] // 将恢复所需的总 CD 值地址给寄存器
@@ -260,67 +273,77 @@ restore_reg:
   jmp original_code
 
 original_code:
-  inc [edi+24]
-  mov eax,[edi+24]
+  sub eax,[ebp+24]
+  mov [esp+10],eax
   jmp return
+
+  is_remove_cooldown_enable:
+    dd (int)0
 
 INJECT:
   jmp newmem
-  nop
+  nop 2
 return:
 
 [DISABLE]
 //code from here till the end of the code will be used to disable the cheat
 INJECT:
-  db FF 47 24 8B 47 24
+  db 2B 45 24 89 44 24 10
 
 // 注销全局符号
 unregistersymbol(INJECT)
+unregistersymbol(pointer_first_card_base)
 // 释放内存
 dealloc(newmem)
-
+dealloc(pointer_first_card_base)
 
 {
-// ORIGINAL CODE - INJECTION POINT: popcapgame1.exe+958BC
+// ORIGINAL CODE - INJECTION POINT: popcapgame1.exe+968F3
 
-popcapgame1.exe+95895: 83 7F 34 FF           - cmp dword ptr [edi+34],-01
-popcapgame1.exe+95899: 0F 84 05 01 00 00     - je popcapgame1.exe+959A4
-popcapgame1.exe+9589F: 8B 4F 04              - mov ecx,[edi+04]
-popcapgame1.exe+958A2: 83 B9 80 55 00 00 00  - cmp dword ptr [ecx+00005580],00
-popcapgame1.exe+958A9: 75 05                 - jne popcapgame1.exe+958B0
-popcapgame1.exe+958AB: E8 10 FF FF FF        - call popcapgame1.exe+957C0
-popcapgame1.exe+958B0: 80 7F 48 00           - cmp byte ptr [edi+48],00
-popcapgame1.exe+958B4: 75 25                 - jne popcapgame1.exe+958DB
-popcapgame1.exe+958B6: 80 7F 49 00           - cmp byte ptr [edi+49],00
-popcapgame1.exe+958BA: 74 1F                 - je popcapgame1.exe+958DB
+popcapgame1.exe+968DA: 80 7D 48 00        - cmp byte ptr [ebp+48],00
+popcapgame1.exe+968DE: 56                 - push esi
+popcapgame1.exe+968DF: 57                 - push edi
+popcapgame1.exe+968E0: 75 24              - jne popcapgame1.exe+96906
+popcapgame1.exe+968E2: 83 7D 28 00        - cmp dword ptr [ebp+28],00
+popcapgame1.exe+968E6: 75 04              - jne popcapgame1.exe+968EC
+popcapgame1.exe+968E8: D9 E8              - fld1 
+popcapgame1.exe+968EA: EB 16              - jmp popcapgame1.exe+96902
+popcapgame1.exe+968EC: 8B 45 28           - mov eax,[ebp+28]
+popcapgame1.exe+968EF: 89 44 24 18        - mov [esp+18],eax
 // ---------- INJECTING HERE ----------
-popcapgame1.exe+958BC: FF 47 24              - inc [edi+24]
+popcapgame1.exe+968F3: 2B 45 24           - sub eax,[ebp+24]
 // ---------- DONE INJECTING  ----------
-popcapgame1.exe+958BF: 8B 47 24              - mov eax,[edi+24]
-popcapgame1.exe+958C2: 3B 47 28              - cmp eax,[edi+28]
-popcapgame1.exe+958C5: 7E 14                 - jle popcapgame1.exe+958DB
-popcapgame1.exe+958C7: C7 47 24 00 00 00 00  - mov [edi+24],00000000
-popcapgame1.exe+958CE: C6 47 49 00           - mov byte ptr [edi+49],00
-popcapgame1.exe+958D2: C6 47 48 01           - mov byte ptr [edi+48],01
-popcapgame1.exe+958D6: E8 E5 FE FF FF        - call popcapgame1.exe+957C0
-popcapgame1.exe+958DB: 8B 47 3C              - mov eax,[edi+3C]
-popcapgame1.exe+958DE: 85 C0                 - test eax,eax
-popcapgame1.exe+958E0: 0F 8E BE 00 00 00     - jng popcapgame1.exe+959A4
+popcapgame1.exe+968F6: 89 44 24 10        - mov [esp+10],eax
+popcapgame1.exe+968FA: DB 44 24 10        - fild dword ptr [esp+10]
+popcapgame1.exe+968FE: DA 74 24 18        - fidiv dword ptr [esp+18]
+popcapgame1.exe+96902: D9 5C 24 14        - fstp dword ptr [esp+14]
+popcapgame1.exe+96906: 83 7D 3C 00        - cmp dword ptr [ebp+3C],00
+popcapgame1.exe+9690A: 0F 8E EF 00 00 00  - jng popcapgame1.exe+969FF
+popcapgame1.exe+96910: 8B 45 14           - mov eax,[ebp+14]
+popcapgame1.exe+96913: D9 45 44           - fld dword ptr [ebp+44]
+popcapgame1.exe+96916: F7 D8              - neg eax
+popcapgame1.exe+96918: 89 44 24 10        - mov [esp+10],eax
 }
 </AssemblerScript>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>9</ID>
-      <Description>"Coin_base"</Description>
-      <LastState Value="100" RealAddress="181A849C"/>
-      <VariableType>4 Bytes</VariableType>
-      <Address>"popcapgame1.exe"+0013A90C</Address>
-      <Offsets>
-        <Offset>84</Offset>
-        <Offset>4</Offset>
-        <Offset>74</Offset>
-        <Offset>708</Offset>
-      </Offsets>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>11</ID>
+          <Description>"pointer_first_card_base"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>pointer_first_card_base</Address>
+          <Offsets>
+            <Offset>0</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>12</ID>
+          <Description>"is_remove_cooldown_enable"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>is_remove_cooldown_enable</Address>
+        </CheatEntry>
+      </CheatEntries>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>
@@ -338,10 +361,12 @@ function Script:new(script_name, enable)
     setmetatable(t, self)
     self.__index = self
     t.enable = enable or false
-    if script_name == 'sun' then
-        t.script = tb.getMemoryRecordByDescription('Sun man pointer')
-    elseif script_name == 'coin' then
-        t.script = tb.getMemoryRecordByDescription('Coin man pointer')
+    if script_name == 'sun_find_pointer' then
+        t.script = tb.getMemoryRecordByDescription('SunFindPointer')
+    elseif script_name == 'coin_find_pointer' then
+        t.script = tb.getMemoryRecordByDescription('CoinFindPointer')
+    elseif script_name == 'read_information' then
+        t.script = tb.getMemoryRecordByDescription('ReadInformation')
     else
         error('请填写有效的脚本名称')
     end
@@ -370,11 +395,11 @@ function Script:Toggle()
 end
 
 function CETrainer_SunWriteClick(sender)
-    writeInteger('[pointer_sun]', 1)
+    writeInteger('[pointer_sun]', 2000)
 end
 
 function CETrainer_CoinWriteClick(sender)
-    writeInteger('[pointer_coin]', 1)
+    writeInteger('[pointer_coin]', 2000)
 end
 
 function CETrainer_EnableSunChange(sender)
@@ -385,7 +410,21 @@ function CETrainer_EnableCoinChange(sender)
     script_coin:Toggle()
 end
 
-script_sun = Script:new('sun')
-script_coin = Script:new('coin')
+function CETrainer_ReadInformationChange(sender)
+  script_read_information:Toggle()
+end
+
+function CETrainer_EnableRemoveCooldownChange(sender)
+  if 'is_remove_cooldown_enable' == 1 then
+    writeSmallInteger('is_remove_cooldown_enable', 0)
+  else
+    writeSmallInteger('is_remove_cooldown_enable', 1)
+  end
+end
+
+script_sun = Script:new('sun_find_pointer')
+script_coin = Script:new('coin_find_pointer')
+script_read_information = Script:new('read_information')
+
 </LuaScript>
 </CheatTable>
