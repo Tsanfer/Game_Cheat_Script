@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CheatTable CheatEngineTableVersion="42">
   <Forms>
-    <CETrainer Class="TTrainerForm" Encoding="Ascii85">t([2C,b_G?DJe1}ImwWvZiga,k+P3?4(5ErMhY0PQ48?HFv]@.M3V,ZH$nEiLLQ}hl{G4Nwxv^PhXR;_/B_XW-$(^;AS9hnhR11YxKLmw,N?)X-d9Ic[,f+KpmPOcmD{Kx7o;U/JbB=#,{S,%/)-T(D{Dmg$^H/cGFJRnVks15d{D:Hoks4MNdd}%V%:SR(/dHB,8p*!eRA;?O0iO?Si@k((3^NHXfUYylxA_73k!6nnA9cEr23#%R(-],k=VVUR)syKiQHN:+QIcQ:.:l.G6SF)nuAHEY/dl+bXn::!Eo=pFeKfSjad#@aj75T-B63Is)AQhkHhad8a{CEgd;TeX}-q6)}-)?ZOU%Q3oJXlaEB:]zPqy#M]dgEn$);3=9R*rig2]=s{/1q%@-D)T]NlY=abVP?d,U?#:YF4o^Dh8)jcBz*^oWAoqFxC5tq9l)P)S,LOep.,#G71-/tz#/V*W+c?9QZqe/hDKj6K35r3uEdn0/=J-rN#8hjtx[+^-QKmRqq+zNc=z!(mA023$HBG[vp*mANp[+0VK</CETrainer>
+    <CETrainer Class="TTrainerForm" Encoding="Ascii85">t(:fM!!Q)vorKg$3Jfe12E?:2RTTq!F_9zV*QU!QL=%2ME3RERE,Fo}RX7cY.0V{hn=M8u5;sS9],wj2th^.%#p6MDJB{4*0?OgNc{V*{*z%OmwD.}dE]iNb=VUJYEEk=_^3+NFsrTmW@b+Y.fk;g1/T(gLddFe16qwM3W;Pe(v}9u{2wi41SL.obPb8OWtKDv,oeRj;OvG#s/MEaI91To/r;J9]?M,34.E@C*:76K)W3rO0F%pwhKH/Hx:dB(c=ge9,GYf:w7jlv*06_Q1P_:VKZ$Rai6]yvxowH6CHDl5zDJ0pse6D6Hbhv13!*.j@E-GF4J#L[{Pr2F0J(}kR/xQVvX4#.by@LvgZSMxuBx@0[sPq*A,8pOg5tz_ZDrSHWszFMMRVj$,-ALVoauGtI!98D@JQ0]!Q*TqjSdWT[,jZ*(0p%-?ptsa:!d?V)Ue074KdFst.{]E(Jex+Ep]vlnH,k!,h-5$8YyFeG:GtCj8ddrZ;-sE5-Jko[UuaMKF7N}WMPOvZY6e;sQrW7e)EO9:69</CETrainer>
   </Forms>
   <CheatEntries>
     <CheatEntry>
@@ -312,7 +312,7 @@ popcapgame1.exe+958E0: 0F 8E BE 00 00 00     - jng popcapgame1.exe+959A4
     <CheatEntry>
       <ID>9</ID>
       <Description>"Coin_base"</Description>
-      <LastState Value="100" RealAddress="18261C2C"/>
+      <LastState Value="100" RealAddress="181A849C"/>
       <VariableType>4 Bytes</VariableType>
       <Address>"popcapgame1.exe"+0013A90C</Address>
       <Offsets>
@@ -324,65 +324,48 @@ popcapgame1.exe+958E0: 0F 8E BE 00 00 00     - jng popcapgame1.exe+959A4
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>
-  <LuaScript>local Tb = {}
-function Tb:new()
-    local obj = {}
-    setmetatable(obj, self)
+  <LuaScript>-- debug 检测配置
+if os.getenv('LOCAL_LUA_DEBUGGER_VSCODE') == '1' then
+    require('lldebugger').start()
+    require('lldebugger').start()
+end
+
+tb = getAddressList()
+
+Script = {}
+function Script:new(script_name, enable)
+    local t = {}
+    setmetatable(t, self)
     self.__index = self
-    self.sun_enable = false
-    self.coin_endable = false
-    self.tb = getAddressList()
-    return obj
+    t.enable = enable or false
+    if script_name == 'sun' then
+        t.script = tb.getMemoryRecordByDescription('Sun man pointer')
+    elseif script_name == 'coin' then
+        t.script = tb.getMemoryRecordByDescription('Coin man pointer')
+    else
+        error('请填写有效的脚本名称')
+    end
+    return t
 end
 
---- 使能阳光脚本
-function Tb:ScriptEnableSun()
-    local script_sun = self.tb.getMemoryRecordByDescription('Sun man pointer')
-    self.sun_enable = true
-    script_sun.Active = true
+--- 使能脚本
+function Script:Enable()
+    self.enable = true
+    self.script.Active = true
 end
 
---- 使能硬币脚本
-function Tb:ScriptEnableCoin()
-    local script_coin = self.tb.getMemoryRecordByDescription('Coin man pointer')
-    self.coin_endable = true
-    script_coin.Active = true
-end
-
---- 关闭阳光脚本
-function Tb:ScriptDisableSun()
-    local script_sun = self.tb.getMemoryRecordByDescription('Sun man pointer')
-    self.sun_enable = false
-    script_sun.Active = false
-end
-
---- 关闭硬币脚本
-function Tb:ScriptDisableCoin()
-    local script_coin = self.tb.getMemoryRecordByDescription('Coin man pointer')
-    self.coin_enable = false
-    script_coin.Active = false
+--- 关闭脚本
+function Script:Disable()
+    self.enable = false
+    self.script.Active = false
 end
 
 --- 翻转脚本使能状态
--- @param {...}
----- 'sun': 翻转阳光脚本使能状态
----- 'coin': 翻转硬币脚本使能状态
-function Tb:ScriptToggle(...)
-    local script = {...}
-    for key, val in ipairs(script) do
-        if val == 'sun' then
-            if self.sun_enable then
-                Tb:ScriptEnableSun()
-            else
-                Tb:ScriptDisableSun()
-            end
-        elseif val == 'coin' then
-            if self.coin_endable then
-                Tb:ScriptEnableCoin()()
-            else
-                Tb:ScriptDisableCoin()()
-            end
-        end
+function Script:Toggle()
+    if self.enable then
+        self:Disable()
+    else
+        self:Enable()
     end
 end
 
@@ -395,15 +378,14 @@ function CETrainer_CoinWriteClick(sender)
 end
 
 function CETrainer_EnableSunChange(sender)
-    my_table:ScriptToggle('sun')
+    script_sun:Toggle()
 end
 
 function CETrainer_EnableCoinChange(sender)
-    my_table:ScriptToggle('coin')
+    script_coin:Toggle()
 end
 
-function CETrainer_FormShow(sender)
-    my_table = Tb:new()
-end
+script_sun = Script:new('sun')
+script_coin = Script:new('coin')
 </LuaScript>
 </CheatTable>

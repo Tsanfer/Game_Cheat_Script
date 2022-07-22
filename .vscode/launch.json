@@ -2,12 +2,24 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Plants vs. Zombies",
+      "name": "Debug Plants_Vs_Zombies Python",
       "type": "python",
       "request": "launch",
-      "cwd": "${workspaceFolder}/Plants vs. Zombies/",
-      "program": "${workspaceFolder}/Plants vs. Zombies/Plants vs. Zombies.air/Plants vs. Zombies.py",
+      "cwd": "${workspaceFolder}/Plants_Vs_Zombies/",
+      "program": "${workspaceFolder}/Plants_Vs_Zombies/Plants_Vs_Zombies.air/Plants_Vs_Zombies.py",
       "console": "integratedTerminal",
+    },
+    {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug Plants_Vs_Zombies Lua",
+      "cwd": "${workspaceFolder}/Plants_Vs_Zombies/",
+      "program": {
+        "command": "lua54"
+      },
+      "args": [
+        "${workspaceFolder}/Plants_Vs_Zombies/tmp.lua"
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 #! python3
 # coding=utf-8
-__name__ = "Plants vs. Zombies.air"
+__name__ = "Plants_Vs_Zombies.air"
 __title__ = "植物大战僵尸自动化脚本"
 __author__ = "Tsanfer"
 __desc__ = """
