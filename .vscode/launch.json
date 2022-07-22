@@ -2,10 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Program",
+      "name": "Debug Plants vs. Zombies",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
+      "cwd": "${workspaceFolder}/Plants vs. Zombies/",
+      "program": "${workspaceFolder}/Plants vs. Zombies/Plants vs. Zombies.air/Plants vs. Zombies.py",
       "console": "integratedTerminal",
     }
   ]
